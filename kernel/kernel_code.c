@@ -60,5 +60,9 @@ long syscall_entry(long n, long a1, long a2, long a3, long a4, long a5)
 	// Hint: see how 'printf' is used above, you want something very
 	// similar here
 
+	if (n==1){
+		printf("%s\n", (char*) a1);
+		return 0;
+	}
 	return -1; /* Success: 0, Failure: -1 */
 }
