@@ -15,28 +15,26 @@ void *page_table = NULL; /* Must be initialized to the page table address */
 void *user_stack = NULL; /* Must be initialized to a user stack virtual address */
 void *user_program = NULL; /* Must be initialized to a user program virtual address */
 
-typedef unsigned long long u64;
-
 // structure used to populate Level 1 entries
 struct page_pte {
-	u64 present:1; 		// bit P
-	u64 writable:1;		// bit R/W
-	u64 user_mode:1;	// bit U/S
-	u64 otherbits:9;
-	u64 page_address:40;	// physical address
-	u64 avail:7;		// reserved
-	u64 pke:4;		// MPK/MPE
-	u64 nonexecute:1;
+	uint64_t present:1; 		// bit P
+	uint64_t writable:1;		// bit R/W
+	uint64_t user_mode:1;		// bit U/S
+	uint64_t otherbits:9;
+	uint64_t page_address:40;	// physical address
+	uint64_t avail:7;		// reserved
+	uint64_t pke:4;			// MPK/MPE
+	uint64_t nonexecute:1;
 };
 // structure used to populate Level 2, 3, or 4 entries
 struct page_pde {
-	u64 present:1;		// bit P
-	u64 writable:1;		// bit R/W
-	u64 user_mode:1;	// bit U/S
-	u64 otherbits:9;
-	u64 page_address:40;	// physical address
-	u64 avail:11;		// reserved
-	u64 nonexecute:1;
+	uint64_t present:1;		// bit P
+	uint64_t writable:1;		// bit R/W
+	uint64_t user_mode:1;		// bit U/S
+	uint64_t otherbits:9;
+	uint64_t page_address:40;	// physical address
+	uint64_t avail:11;		// reserved
+	uint64_t nonexecute:1;
 };
 
 void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
@@ -67,7 +65,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 		pd[j].writable = 1;
 		pd[j].user_mode = 0;
 		pd[j].otherbits = 0;
-		pd[j].page_address = (u64) start_pte >> 12; // PTE page address
+		pd[j].page_address = (uint64_t) start_pte >> 12; // PTE page address
 		pd[j].avail = 0;
 		pd[j].nonexecute = 0;
 	}
@@ -80,7 +78,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 		pdpe[k].writable = 1;
 		pdpe[k].user_mode = 0;
 		pdpe[k].otherbits = 0;
-		pdpe[k].page_address = (u64) start_pde >> 12; // PDE page address
+		pdpe[k].page_address = (uint64_t) start_pde >> 12; // PDE page address
 		pdpe[k].avail = 0;
 		pdpe[k].nonexecute = 0;
 	}
@@ -102,7 +100,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 	pmle4e[0].writable = 1;
 	pmle4e[0].user_mode = 0;
 	pmle4e[0].otherbits = 0;
-	pmle4e[0].page_address = (u64) start_pdpe >> 12; // PDPE page address
+	pmle4e[0].page_address = (uint64_t) start_pdpe >> 12; // PDPE page address
 	pmle4e[0].avail = 0;
 	pmle4e[0].nonexecute = 0;
 	//initialize extra entries in table
@@ -146,7 +144,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 	u_p[0].writable = 1;
 	u_p[0].user_mode = 1;
 	u_p[0].otherbits = 0;
-	u_p[0].page_address = (u64) phys_user_stack  >> 12; // user stack page address
+	u_p[0].page_address = (uint64_t) phys_user_stack  >> 12; // user stack page address
 	u_p[0].avail = 0;
 	u_p[0].pke = 0;
 	u_p[0].nonexecute = 0;
@@ -155,7 +153,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 	u_p[511].writable = 1;
 	u_p[511].user_mode = 1;
 	u_p[511].otherbits = 0;
-	u_p[511].page_address = (u64) phys_user_program >> 12; // user program page address
+	u_p[511].page_address = (uint64_t) phys_user_program >> 12; // user program page address
 	u_p[511].avail = 0;
 	u_p[511].pke = 0;
 	u_p[511].nonexecute = 0;
@@ -177,7 +175,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 	u_pd[511].writable = 1;
 	u_pd[511].user_mode = 1;
 	u_pd[511].otherbits = 0;
-	u_pd[511].page_address = (u64) u_p >> 12; // level 1 (PTE) page address
+	u_pd[511].page_address = (uint64_t) u_p >> 12; // level 1 (PTE) page address
 	u_pd[511].avail = 0;
 	u_pd[511].nonexecute = 0;	
 
@@ -198,7 +196,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 	u_pdpe[511].writable = 1;
 	u_pdpe[511].user_mode = 1;
 	u_pdpe[511].otherbits = 0;
-	u_pdpe[511].page_address = (u64) u_pd >> 12; // level 2 (PDE) page address
+	u_pdpe[511].page_address = (uint64_t) u_pd >> 12; // level 2 (PDE) page address
 	u_pdpe[511].avail = 0;
 	u_pdpe[511].nonexecute = 0;	
 
@@ -207,7 +205,7 @@ void kernel_init(void *ustack, void *uprogram, void *memory, size_t memorySize)
 	pmle4e[511].writable = 1;
 	pmle4e[511].user_mode = 1;
 	pmle4e[511].otherbits = 0;
-	pmle4e[511].page_address = (u64) u_pdpe >> 12; // level 3 (PDPE) page address
+	pmle4e[511].page_address = (uint64_t) u_pdpe >> 12; // level 3 (PDPE) page address
 	pmle4e[511].avail = 0;
 	pmle4e[511].nonexecute = 0;
 	
